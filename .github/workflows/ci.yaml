@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: clippy, rustfmt
+          override: true
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run cargo test (capture output)
+        id: run_tests
+        run: |
+          set -o pipefail
+          mkdir -p test-logs
+          if cargo test --all --verbose 2>&1 | tee test-logs/cargo-test.log; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "summary=All tests passed" >> $GITHUB_OUTPUT
+          else
+            EXIT_CODE=${PIPESTATUS[0]:-1}
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "summary=Some tests failed (exit code $EXIT_CODE)" >> $GITHUB_OUTPUT
+            echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fail job if tests failed
+        if: steps.run_tests.outputs.status == 'failure'
+        run: |
+          echo "Tests failed: ${{ steps.run_tests.outputs.summary }}"
+          exit ${{ steps.run_tests.outputs.exit_code }}
