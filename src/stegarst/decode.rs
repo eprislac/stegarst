@@ -18,7 +18,6 @@ macro_rules! success {
     }};
 }
 
-///
 /// Retrieves a message hidden inside an image using LSB steganography
 ///
 /// ## Arguments:
@@ -33,7 +32,6 @@ macro_rules! success {
 /// ```rust
 ///   decode("input.png", "output_message.txt");
 /// ```
-
 pub fn decode(src: &str, dest: &str) {
     info!("Getting image data");
     let decoder = Decoder::new(BufReader::new(File::open(src).unwrap()));
