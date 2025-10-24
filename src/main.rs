@@ -1,3 +1,4 @@
+//! Stegarst CLI: A command-line tool for steganography in PNG images.
 mod stegarst;
 
 use clap::Parser;
@@ -9,6 +10,21 @@ macro_rules! info {
     }};
 }
 
+/// Entry point for the stegarst CLI application
+/// - Parses command-line arguments and calls the appropriate functions
+///   to either encode or decode messages in PNG images.
+/// ## Options:
+/// ```bash
+/// -o, --option <OPTION>        Specify 'read' to extract a message or 'write' to hide a message
+/// -f, --file <FILE>           Path to the file to hide (required for 'write' option)
+/// -i, --image <IMAGE>         Path to the image file
+/// --output <OUTPUT>           Path to output the result (message file or image file)
+/// ```
+/// ## Example:
+/// ```bash
+/// stegarst --option write --file message.txt --image input.png --output output.png
+/// stegarst --option read --image input.png --output message.txt
+/// ```
 fn main() {
     let args = Cli::parse();
 
