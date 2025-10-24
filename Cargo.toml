@@ -18,6 +18,7 @@ readme = "README.md"
 
 [dependencies]
 clap = { version = "4.5.50", features = ["derive"] }
+clippy = "0.0.302"
 png = "0.18.0"
 
 #[doc=include_str!("README.md")]
