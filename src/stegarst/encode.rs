@@ -1,4 +1,7 @@
+//! Module to provide ability to hide a message inside an image, using LSB steganography
+
 use crate::stegarst::bit_utils::BitUtils;
+extern crate png;
 use png::{Decoder, Encoder};
 use std::{
     fs::{File, read},
@@ -21,6 +24,22 @@ macro_rules! error {
     }};
 }
 
+///
+/// Hides a message inside an image using LSB steganography
+///
+/// ## Arguments:
+///   - **src:** `&str` -  path to the source image
+///   - **msg_src:** `&str`
+///     -  path to the message file to hide
+///   - **dest:** `&str`
+///     - path to the destination image to save the result
+/// ## Returns:
+/// - `void`
+///
+/// ## Example:
+/// ```rust
+///   encode("input.png", "message.txt", "output.png");
+/// ```
 pub fn encode(src: &str, msg_src: &str, dest: &str) {
     info!("Transforming message to bytes");
     let message_bytes = read(msg_src).unwrap();
@@ -75,4 +94,53 @@ pub fn encode(src: &str, msg_src: &str, dest: &str) {
         .write_image_data(&data)
         .unwrap();
     success!("Succesfully saved message on image {}", &dest);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use png::{BitDepth, ColorType, Encoder};
+    use std::fs;
+    use std::io::BufWriter;
+    use std::io::Write;
+
+    #[test]
+    fn test_encode_creates_file() {
+        let temp_dir = std::env::temp_dir();
+        let src_path = temp_dir.join("test_input.png");
+        let msg_path = temp_dir.join("test_message.txt");
+        let dest_path = temp_dir.join("test_output.png");
+
+        // Create a simple PNG image
+        {
+            let file = fs::File::create(&src_path).unwrap();
+            let w = BufWriter::new(file);
+            let mut encoder = Encoder::new(w, 1, 1);
+            encoder.set_color(ColorType::Rgb);
+            encoder.set_depth(BitDepth::Eight);
+            let mut writer = encoder.write_header().unwrap();
+            writer.write_image_data(&[255, 0, 0]).unwrap();
+        }
+
+        // Create message file
+        {
+            let mut msg_file = fs::File::create(&msg_path).unwrap();
+            msg_file.write_all(b"Hi").unwrap();
+        }
+
+        // Encode
+        encode(
+            src_path.to_str().unwrap(),
+            msg_path.to_str().unwrap(),
+            dest_path.to_str().unwrap(),
+        );
+
+        // Check if dest exists
+        assert!(dest_path.exists());
+
+        // Cleanup
+        let _ = fs::remove_file(&src_path);
+        let _ = fs::remove_file(&msg_path);
+        let _ = fs::remove_file(&dest_path);
+    }
 }

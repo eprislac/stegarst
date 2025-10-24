@@ -1,8 +1,23 @@
 [package]
 name = "stegarst"
-version = "0.1.0"
+authors = ["Eddie Prislac", "Andres Alejandro Coronel Rodrigues"]
+version = "0.1.1"
 edition = "2024"
+description = "A simple steganography tool for hiding messages in PNG images."
+license = "GPL3"
+license-file = "LICENSE.txt"
+categories = [
+  "command-line-utilities",
+  "steganography",
+  "image-processing",
+  "cli",
+]
+keywords = ["steganography", "png", "cli", "image", "hide message"]
+repository = "https://github.com/eprislac/stegarst"
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4.5.50", features = ["derive"] }
 png = "0.18.0"
+
+#[doc=include_str!("README.md")]

@@ -1,16 +1,25 @@
+//! Utility functions for bit manipulation and conversion between bytes and bits.
 pub struct BitUtils {}
 
 impl BitUtils {
-    // Transforms a decimal represented byte into its bit representation
-    // byte: input byte
-    // returns: bit array
+    /// Transforms a decimal represented byte into its bit representation
+    ///
+    /// # Arguments:
+    /// - **byte**: `u8`
+    ///   - input byte
+    /// # Returns:
+    /// - `Vec<u8>` bit array
     pub fn byte_to_bit(byte: u8) -> Vec<u8> {
         (0..8).rev().map(|i| (byte >> i) & 1).collect()
     }
 
-    // Transforms a decimal represented 4 byte into its bits representation
-    // byte: input byte
-    // returns: bit array
+    /// Transforms a decimal represented 4 byte into its bits representation
+    ///
+    /// # Arguments:
+    /// - **byte**: `u32`
+    ///   - input byte
+    /// # Returns:
+    /// - `Vec<u8>` bit array
     pub fn byte_u32_to_bit(byte: u32) -> Vec<u8> {
         let mut bits = Vec::new();
         for i in (0..32).rev() {
@@ -19,9 +28,13 @@ impl BitUtils {
         bits
     }
 
-    // Transforms a byte in its bit form into its decimal representation
-    // byte: input bit array
-    // returns: decimal representation
+    /// Transforms a byte in its bit form into its decimal representation
+    ///
+    /// # Arguments:
+    /// - **byte**: `Vec<u32>`
+    ///   - input bit array
+    /// # Returns:
+    /// - `u8` decimal representation
     pub fn byte_to_decimal(byte: Vec<u8>) -> u8 {
         let mut value: u8 = 0;
         for (i, bit) in byte.iter().enumerate() {
@@ -30,23 +43,37 @@ impl BitUtils {
         value
     }
 
-    // Transforms 4 bytes in its bit form into its decimal representation
+    /// Transforms 4 bytes in its bit form into its decimal representation
+    ///
+    /// # Argtuments:
+    /// - **byte**: `Vec<u8>`
+    ///   - input bit array
+    /// # Returns:
+    /// - `u32` decimal representation
     pub fn byte_u32_to_decimal(byte: Vec<u8>) -> u32 {
         byte.iter()
             .enumerate()
             .fold(0, |acc, (i, bit)| acc + ((*bit as u32) << (31 - i)))
     }
 
-    // Reads the least significant bit (LSB) from a byte array
-    // bytes: input byte array
-    // returns: vector of LSBs
+    /// Reads the least significant bit (LSB) from a byte array
+    ///
+    /// # Arguments:
+    /// - **bytes**: `Vec<u8>`
+    ///  - input byte array
+    /// # Returns:
+    ///  - `Vec<u8>` vector of LSBs
     pub fn read_lsb(bytes: Vec<u8>) -> Vec<u8> {
         bytes.iter().map(|byte| byte % 2).collect()
     }
 
-    // Takes bits and transforms them into bytes
-    // bits: input bit array
-    // returns: vector of bytes
+    /// Takes bits and transforms them into bytes
+    ///
+    /// # Arguments:
+    /// - **bits**: `Vec<u8>`
+    ///  - input bit array
+    /// # Returns:
+    ///  - `Vec<u8>` vector of bytes
     pub fn bits_to_bytes(bits: Vec<u8>) -> Vec<u8> {
         bits.chunks(8)
             .map(|chunk| Self::byte_to_decimal(chunk.to_vec()))
