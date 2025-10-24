@@ -111,15 +111,16 @@ mod tests {
         let msg_path = temp_dir.join("test_message.txt");
         let dest_path = temp_dir.join("test_output.png");
 
-        // Create a simple PNG image
+        // Create a simple PNG image (10x10 for sufficient capacity)
         {
             let file = fs::File::create(&src_path).unwrap();
             let w = BufWriter::new(file);
-            let mut encoder = Encoder::new(w, 1, 1);
+            let mut encoder = Encoder::new(w, 10, 10);
             encoder.set_color(ColorType::Rgb);
             encoder.set_depth(BitDepth::Eight);
             let mut writer = encoder.write_header().unwrap();
-            writer.write_image_data(&[255, 0, 0]).unwrap();
+            let data = vec![255; 10 * 10 * 3]; // 300 bytes of data
+            writer.write_image_data(&data).unwrap();
         }
 
         // Create message file
