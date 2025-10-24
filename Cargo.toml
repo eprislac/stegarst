@@ -5,7 +5,6 @@ version = "0.1.1"
 edition = "2024"
 description = "A simple steganography tool for hiding messages in PNG images."
 license = "GPL3"
-license-file = "LICENSE.txt"
 categories = [
   "command-line-utilities",
   "steganography",
@@ -18,7 +17,9 @@ readme = "README.md"
 
 [dependencies]
 clap = { version = "4.5.50", features = ["derive"] }
-clippy = "0.0.302"
 png = "0.18.0"
+
+[dev-dependencies]
+clippy = "0.0.302"
 
 #[doc=include_str!("README.md")]
