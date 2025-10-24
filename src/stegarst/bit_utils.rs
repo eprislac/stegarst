@@ -112,17 +112,17 @@ mod tests {
     fn test_byte_u32_to_decimal() {
         assert_eq!(BitUtils::byte_u32_to_decimal(vec![0; 32]), 0);
         assert_eq!(BitUtils::byte_u32_to_decimal(vec![1; 32]), u32::MAX);
-        
+
         let mut bits = vec![0; 31];
         bits.push(1);
         assert_eq!(BitUtils::byte_u32_to_decimal(bits), 1);
-        
+
         let mut bits = vec![0; 24];
         bits.extend_from_slice(&[1, 1, 1, 1, 1, 1, 1, 1]);
         assert_eq!(BitUtils::byte_u32_to_decimal(bits), 255);
-        
+
         let mut bits = vec![1];
-        bits.extend_from_slice(&vec![0; 31]);
+        bits.extend_from_slice(&[0; 31]);
         assert_eq!(BitUtils::byte_u32_to_decimal(bits), 2147483648);
     }
 
@@ -150,7 +150,10 @@ mod tests {
         assert_eq!(BitUtils::read_lsb(vec![]), vec![]);
         assert_eq!(BitUtils::read_lsb(vec![0, 1, 2, 3]), vec![0, 1, 0, 1]);
         assert_eq!(BitUtils::read_lsb(vec![4, 5, 6, 7]), vec![0, 1, 0, 1]);
-        assert_eq!(BitUtils::read_lsb(vec![255, 254, 128, 127]), vec![1, 0, 0, 1]);
+        assert_eq!(
+            BitUtils::read_lsb(vec![255, 254, 128, 127]),
+            vec![1, 0, 0, 1]
+        );
         assert_eq!(BitUtils::read_lsb(vec![10, 11, 12, 13]), vec![0, 1, 0, 1]);
     }
 
@@ -181,27 +184,15 @@ mod tests {
             BitUtils::bits_to_bytes(vec![1, 0, 1, 0, 1, 0, 1]),
             vec![170]
         );
-        assert_eq!(
-            BitUtils::bits_to_bytes(vec![1, 1, 1]),
-            vec![224]
-        );
+        assert_eq!(BitUtils::bits_to_bytes(vec![1, 1, 1]), vec![224]);
     }
 
     #[test]
     fn test_make_bits() {
         assert_eq!(BitUtils::make_bits(vec![]), vec![]);
-        assert_eq!(
-            BitUtils::make_bits(vec![0]),
-            vec![0, 0, 0, 0, 0, 0, 0, 0]
-        );
-        assert_eq!(
-            BitUtils::make_bits(vec![255]),
-            vec![1, 1, 1, 1, 1, 1, 1, 1]
-        );
-        assert_eq!(
-            BitUtils::make_bits(vec![1]),
-            vec![0, 0, 0, 0, 0, 0, 0, 1]
-        );
+        assert_eq!(BitUtils::make_bits(vec![0]), vec![0, 0, 0, 0, 0, 0, 0, 0]);
+        assert_eq!(BitUtils::make_bits(vec![255]), vec![1, 1, 1, 1, 1, 1, 1, 1]);
+        assert_eq!(BitUtils::make_bits(vec![1]), vec![0, 0, 0, 0, 0, 0, 0, 1]);
         assert_eq!(
             BitUtils::make_bits(vec![0, 255]),
             vec![0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
@@ -232,7 +223,7 @@ mod tests {
     fn test_lsb_steganography_simulation() {
         let mut carrier = vec![100, 101, 102, 103, 104, 105, 106, 107];
         let message_bits = vec![1, 0, 1, 1, 0, 1, 0, 0];
-        
+
         for (i, bit) in message_bits.iter().enumerate() {
             if *bit == 1 && carrier[i] % 2 == 0 {
                 carrier[i] += 1;
@@ -240,7 +231,7 @@ mod tests {
                 carrier[i] -= 1;
             }
         }
-        
+
         let extracted_bits = BitUtils::read_lsb(carrier);
         assert_eq!(extracted_bits, message_bits);
     }
